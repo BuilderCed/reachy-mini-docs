@@ -1,0 +1,89 @@
+# GitHub Actions - Vérification documentation Reachy Mini
+# À copier vers le repo reachy-mini-docs
+
+name: Documentation Verification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'README.md'
+      - '.env.example'
+      - 'scripts/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'README.md'
+  schedule:
+    # Vérification hebdomadaire (lundi 9h UTC)
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+jobs:
+  verify-docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Make verify script executable
+        run: chmod +x scripts/verify-docs.sh
+
+      - name: Run documentation verification
+        run: ./scripts/verify-docs.sh
+
+      - name: Check for security issues in docs
+        run: |
+          echo "Checking for potential secrets in documentation..."
+          # Patterns à détecter (ne devrait jamais être dans les docs)
+          if grep -rE '(sk-ant-[a-zA-Z0-9]+|ghp_[a-zA-Z0-9]+|github_pat_[a-zA-Z0-9]+)' docs/ README.md 2>/dev/null; then
+            echo "❌ Potential secrets found in documentation!"
+            exit 1
+          fi
+          echo "✅ No secrets found in documentation"
+
+  check-links:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check external links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --verbose --no-progress --accept 200,204,206,429 'docs/**/*.md' 'README.md'
+          fail: false
+        continue-on-error: true
+
+  sdk-version-check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check SDK version on PyPI
+        run: |
+          echo "Checking latest reachy-mini version on PyPI..."
+          PYPI_VERSION=$(curl -s https://pypi.org/pypi/reachy-mini/json | jq -r '.info.version' 2>/dev/null || echo "unknown")
+          echo "Latest PyPI version: $PYPI_VERSION"
+
+          if [ "$PYPI_VERSION" != "unknown" ]; then
+            if grep -q "$PYPI_VERSION" README.md; then
+              echo "✅ README mentions current SDK version"
+            else
+              echo "⚠️ README may reference outdated SDK version (current: $PYPI_VERSION)"
+            fi
+          fi
