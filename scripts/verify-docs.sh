@@ -74,8 +74,9 @@ check_internal_links() {
         # Extraire le chemin
         path=$(echo "$link" | sed -E 's/.*\]\(([^)]+)\).*/\1/')
         
-        # Ignorer les liens HTTP/HTTPS
+        # Ignorer les liens HTTP/HTTPS et mailto
         [[ "$path" =~ ^https?:// ]] && continue
+        [[ "$path" =~ ^mailto: ]] && continue
         
         # Ignorer les ancres pures (#...)
         [[ "$path" =~ ^# ]] && continue
