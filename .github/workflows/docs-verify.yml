@@ -42,8 +42,9 @@ jobs:
       - name: Check for security issues in docs
         run: |
           echo "Checking for potential secrets in documentation..."
-          # Patterns à détecter (ne devrait jamais être dans les docs)
-          if grep -rE '(sk-ant-[a-zA-Z0-9]+|ghp_[a-zA-Z0-9]+|github_pat_[a-zA-Z0-9]+)' docs/ README.md 2>/dev/null; then
+          # Patterns à détecter (ignorer les exemples avec ... ou YOUR_)
+          # Chercher des vrais tokens (au moins 20 caractères après le préfixe)
+          if grep -rE '(sk-ant-[a-zA-Z0-9]{20,}|ghp_[a-zA-Z0-9]{20,}|github_pat_[a-zA-Z0-9_]{20,})' docs/ README.md .env.example 2>/dev/null | grep -v '\.\.\.' | grep -v 'YOUR_'; then
             echo "❌ Potential secrets found in documentation!"
             exit 1
           fi

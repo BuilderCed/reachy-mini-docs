@@ -93,10 +93,10 @@ Voir [.env.example](./.env.example) pour la liste des variables.
 
 ```bash
 # Claude Desktop / Apps Reachy
-security add-generic-password -a "reachy_apps" -s "ANTHROPIC_API_KEY" -w "sk-ant-..." -T ""
+security add-generic-password -a "reachy_apps" -s "ANTHROPIC_API_KEY" -w "YOUR_API_KEY" -U
 
 # Cursor (clé séparée pour traçabilité)
-security add-generic-password -a "cursor" -s "ANTHROPIC_API_KEY" -w "sk-ant-cursor-..." -T ""
+# Configurer directement dans Cursor > Settings > API
 
 # Lecture
 security find-generic-password -a "reachy_apps" -s "ANTHROPIC_API_KEY" -w
@@ -111,7 +111,7 @@ Créer un **Fine-grained Personal Access Token**:
 4. Permissions:
    - **Contents**: Read and write
    - **Metadata**: Read (auto)
-5. Stocker dans Keychain: `security add-generic-password -a "github_automation" -s "GITHUB_PAT" -w "github_pat_..." -T ""`
+5. Stocker dans Keychain: `security add-generic-password -a "github_automation" -s "GITHUB_PAT" -w "YOUR_TOKEN" -U`
 
 ---
 
