@@ -4,7 +4,7 @@
 
 [![Documentation Verification](https://github.com/BuilderCed/reachy-mini-docs/actions/workflows/docs-verify.yml/badge.svg)](https://github.com/BuilderCed/reachy-mini-docs/actions/workflows/docs-verify.yml)
 [![Last Updated](https://img.shields.io/badge/updated-January%202026-blue.svg)](./docs/CHANGELOG.md)
-[![SDK Version](https://img.shields.io/badge/SDK-v1.2.0-green.svg)](https://pypi.org/project/reachy-mini/)
+[![SDK Version](https://img.shields.io/pypi/v/reachy-mini?label=SDK&color=green)](https://pypi.org/project/reachy-mini/)
 
 ---
 
@@ -49,7 +49,7 @@ open http://reachy.local:8000
 
 ---
 
-## 🔧 SDK v1.2.0 - API Officielle
+## 🔧 SDK - API Officielle
 
 ```python
 from reachy_mini import ReachyMini
@@ -178,4 +178,4 @@ La CI vérifie:
 
 **Dernière mise à jour:** Janvier 2026  
 **Status:** ✅ Production Ready  
-**SDK:** v1.2.0
+**SDK:** Voir badge PyPI ci-dessus

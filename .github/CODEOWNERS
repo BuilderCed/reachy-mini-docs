@@ -1,0 +1,12 @@
+# CODEOWNERS - Reachy Mini Documentation
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for all files
+* @BuilderCed
+
+# Documentation requires owner review
+/docs/ @BuilderCed
+
+# Security-related files require extra review
+SECURITY.md @BuilderCed
+.github/workflows/ @BuilderCed

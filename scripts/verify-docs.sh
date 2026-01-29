@@ -154,12 +154,14 @@ if command -v curl &> /dev/null; then
     if [[ -n "$PYPI_VERSION" ]]; then
         echo -e "  ${GREEN}✓${NC} Version PyPI actuelle: $PYPI_VERSION"
         
-        # Vérifier si la version est mentionnée dans le README
-        if grep -q "$PYPI_VERSION" "$ROOT_DIR/README.md" 2>/dev/null; then
+        # Vérifier si le badge PyPI dynamique est utilisé (meilleure pratique)
+        if grep -q "pypi/v/reachy-mini" "$ROOT_DIR/README.md" 2>/dev/null; then
+            echo -e "  ${GREEN}✓${NC} Badge PyPI dynamique utilisé (auto-update)"
+        elif grep -q "$PYPI_VERSION" "$ROOT_DIR/README.md" 2>/dev/null; then
             echo -e "  ${GREEN}✓${NC} Version documentée à jour dans README"
         else
-            echo -e "  ${YELLOW}!${NC} README mentionne peut-être une ancienne version"
-            ((WARNINGS++))
+            echo -e "  ${YELLOW}!${NC} README mentionne peut-être une ancienne version (non bloquant)"
+            ((WARNINGS++)) || true
         fi
     else
         echo -e "  ${YELLOW}?${NC} Impossible de vérifier la version PyPI"

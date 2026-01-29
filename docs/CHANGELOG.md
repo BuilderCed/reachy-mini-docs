@@ -37,6 +37,20 @@ Le format est basé sur [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ---
 
+## [1.1.0] - 2026-01-29
+
+### Ajouté
+- 🔒 **SECURITY.md** - Politique de sécurité et bonnes pratiques
+- 📝 **CONTRIBUTING.md** - Guide de contribution
+- 👥 **CODEOWNERS** - Gouvernance des reviews
+- 🤖 **Dependabot** - Mises à jour automatiques des dépendances
+
+### Amélioré
+- 🔍 **Workflow CI** - Scan de secrets, validation liens, check version SDK
+- 📊 **Jobs parallèles** - Vérification plus rapide
+
+---
+
 ## [Unreleased]
 
 ### À faire
