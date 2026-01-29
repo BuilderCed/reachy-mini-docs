@@ -2,7 +2,7 @@
 # verify-docs.sh - Vérification de l'intégrité de la documentation Reachy Mini
 # Usage: ./scripts/verify-docs.sh
 
-set -e
+# Note: pas de set -e car on gère les erreurs manuellement
 
 # Couleurs
 RED='\033[0;31m'
@@ -65,28 +65,28 @@ echo "🔗 [2/4] Vérification des liens internes..."
 check_internal_links() {
     local file="$1"
     local dir=$(dirname "$file")
+    local has_broken=0
     
     # Extraire les liens markdown [text](path)
-    grep -oE '\[([^]]+)\]\(([^)]+)\)' "$file" 2>/dev/null | while read -r link; do
+    while IFS= read -r link; do
+        [[ -z "$link" ]] && continue
+        
         # Extraire le chemin
         path=$(echo "$link" | sed -E 's/.*\]\(([^)]+)\).*/\1/')
         
         # Ignorer les liens HTTP/HTTPS
-        if [[ "$path" =~ ^https?:// ]]; then
-            continue
-        fi
+        [[ "$path" =~ ^https?:// ]] && continue
         
         # Ignorer les ancres pures (#...)
-        if [[ "$path" =~ ^# ]]; then
-            continue
-        fi
+        [[ "$path" =~ ^# ]] && continue
         
         # Supprimer l'ancre du chemin
         path_without_anchor=$(echo "$path" | sed 's/#.*//')
+        [[ -z "$path_without_anchor" ]] && continue
         
         # Résoudre le chemin relatif
         if [[ "$path_without_anchor" =~ ^\.\./ ]] || [[ "$path_without_anchor" =~ ^\.\.$ ]]; then
-            full_path=$(cd "$dir" && realpath "$path_without_anchor" 2>/dev/null || echo "")
+            full_path=$(cd "$dir" 2>/dev/null && realpath "$path_without_anchor" 2>/dev/null || echo "")
         elif [[ "$path_without_anchor" =~ ^\./ ]]; then
             full_path="$dir/${path_without_anchor#./}"
         else
@@ -96,23 +96,27 @@ check_internal_links() {
         # Vérifier si le fichier existe
         if [[ -n "$path_without_anchor" ]] && [[ ! -e "$full_path" ]]; then
             echo -e "  ${RED}✗${NC} $(basename "$file"): lien cassé vers $path"
-            echo "BROKEN_LINK"
+            has_broken=1
         fi
-    done
+    done < <(grep -oE '\[([^]]+)\]\(([^)]+)\)' "$file" 2>/dev/null || true)
+    
+    return $has_broken
 }
 
 # Vérifier tous les fichiers markdown
+LINK_ERRORS=0
 for md_file in "$ROOT_DIR"/*.md "$DOCS_DIR"/*.md; do
     if [[ -f "$md_file" ]]; then
-        result=$(check_internal_links "$md_file")
-        if [[ "$result" == *"BROKEN_LINK"* ]]; then
-            ((ERRORS++))
+        if ! check_internal_links "$md_file"; then
+            ((LINK_ERRORS++)) || true
         fi
     fi
 done
 
-if [[ $ERRORS -eq 0 ]]; then
+if [[ $LINK_ERRORS -eq 0 ]]; then
     echo -e "  ${GREEN}✓${NC} Tous les liens internes sont valides"
+else
+    ((ERRORS+=LINK_ERRORS)) || true
 fi
 echo ""
 
